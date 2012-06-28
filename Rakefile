@@ -7,7 +7,7 @@ desc 'Default: run specs.'
 task :default => :spec
 
 task "resque:setup" do
-  require "ferrety/scheduler"
+  require "ferrety/dispatcher"
 end
 
 RSpec::Core::RakeTask.new do |t|
