@@ -12,7 +12,6 @@ else
   MYSQL_PASSWORD = ""
 end
 
-
 module Ferrety
 
   class Instruction < ActiveRecord::Base
@@ -44,12 +43,3 @@ module Ferrety
 end
 
 scheduler = Ferrety::Scheduler.new.call
-
-
-
-
-
-
-
-
-
