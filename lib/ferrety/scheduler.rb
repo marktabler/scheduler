@@ -1,40 +1,25 @@
-require "active_record"
+require 'httparty'
+require 'json'
 require "resque"
 
-if ENV["RAILS_ENV"] == "production"
-  DATABASE_NAME = "ferrety_production"
-  MYSQL_PASSWORD = "databucket2"
-elsif ENV["RAILS_ENV"] == "test"
-  DATABASE_NAME = "ferrety_test"
-  MYSQL_PASSWORD = ""
-else
-  DATABASE_NAME = "ferrety_development"
-  MYSQL_PASSWORD = ""
-end
+INTERNAL_PASSWORD = '350c9d803c149399e61641e1e81228464f94e02351afb18da921096f7d6e9caee1722560db2000e73851699c8fd8d869d604ec91d49b6982483cc6960a5a4d82'
+INSTRUCTION_ENDPOINT = 'http://localhost:3000/instructions/runnable.json'
 
 module Ferrety
 
-  class Instruction < ActiveRecord::Base
+  class Instruction
     @queue = :ferret_queue
     def self.runnable
-      where("last_run < ?", DateTime.now - 4.hours)
+      response = HTTParty.get("#{INSTRUCTION_ENDPOINT}?pw=#{INTERNAL_PASSWORD}")
     end
   end
 
   class Scheduler
 
-    def initialize
-      ActiveRecord::Base.establish_connection(
-        :adapter => 'mysql2',
-        :database =>  DATABASE_NAME,
-        :username => "root",
-        :password => MYSQL_PASSWORD,
-        :host => "localhost")
-    end
-
     def call
-      instructions = Instruction.all
+      instructions = Instruction.runnable
       instructions.each do |instruction|
+        puts instruction.to_json.inspect
         Resque.enqueue(Instruction, instruction.to_json)
       end
     end
