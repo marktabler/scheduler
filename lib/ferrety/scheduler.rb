@@ -19,7 +19,6 @@ module Ferrety
     def call
       instructions = Instruction.runnable
       instructions.each do |instruction|
-        puts instruction.to_json.inspect
         Resque.enqueue(Instruction, instruction.to_json)
       end
     end
