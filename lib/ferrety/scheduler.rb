@@ -10,7 +10,8 @@ module Ferrety
   class Instruction
     @queue = :ferret_queue
     def self.runnable
-      response = HTTParty.get("#{INSTRUCTION_ENDPOINT}?pw=#{INTERNAL_PASSWORD}")
+      response = HTTParty.get(URI.parse("#{INSTRUCTION_ENDPOINT}?pw=#{INTERNAL_PASSWORD}"))
+      puts response.inspect
     end
   end
 
